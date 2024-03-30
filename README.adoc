@@ -4,7 +4,7 @@ This project contains a simple example of cucumber test case implementation.
 
 Let's have a look on step by step process:
 
-1. Create a spring boot project using CLI
+- Create a spring boot project using CLI
 
 ====
 [source, bash]
@@ -13,7 +13,7 @@ spring boot new --group-id com.sp --artifact-id sp.my-cucumber-test-suite --vers
 ----
 ====
 
-2. Now before to start, we need to add few cucumber dependencies into pom.xml file.
+- Now before to start, we need to add few cucumber dependencies into pom.xml file.
 
 ====
 [source, xml]
@@ -38,7 +38,7 @@ spring boot new --group-id com.sp --artifact-id sp.my-cucumber-test-suite --vers
 ----
 ====
 
-3. Now create a class in src/test/java/GlobalCucumberTestSuite.java
+- Now create a class in src/test/java/GlobalCucumberTestSuite.java
 
 ====
 [source,java]
@@ -77,7 +77,7 @@ Above given @CucumberOptions annotation attributes description:
 ----
 ====
 
-4. Now create a class in src/test/java/MyCucumberTestSuite.java
+- Now create a class in src/test/java/MyCucumberTestSuite.java
 
 ====
 [source,java]
@@ -90,7 +90,7 @@ public class MyCucumberTestSuite {
 ----
 ====
 
-5. Now create a class in src/test/java/config/CommonConfig.java
+- Now create a class in src/test/java/config/CommonConfig.java
 
 ====
 [source,java]
@@ -104,7 +104,7 @@ public class CommonConfig {
 ----
 ====
 
-6. Now create the request and response model.
+- Now create the request and response model.
 As of now i want to create src/test/java/model/GreetingRequest.java
 
 ====
@@ -124,7 +124,7 @@ public class GreetingRequest {
 ----
 ====
 
-7. Now finally, we need to create step definition class to write the test case.
+- Now finally, we need to create step definition class to write the test case.
 
 ====
 [source,java]
