@@ -1,0 +1,171 @@
+== Cucumber Test Suite
+
+This project contains a simple example of cucumber test case implementation.
+
+Let's have a look on step by step process:
+
+1. Create a spring boot project using CLI
+
+====
+[source, bash]
+----
+spring boot new --group-id com.sp --artifact-id sp.my-cucumber-test-suite --version 1.0.0 --package-name com.sp.test-suite --name my-cucumber-test-suite
+----
+====
+
+2. Now before to start, we need to add few cucumber dependencies into pom.xml file.
+
+====
+[source, xml]
+----
+    <dependency>
+        <groupId>io.cucumber</groupId>
+        <artifactId>cucumber-java</artifactId>
+        <version>7.16.1</version>
+    </dependency>
+
+    <dependency>
+        <groupId>io.cucumber</groupId>
+        <artifactId>cucumber-junit</artifactId>
+        <version>7.16.1</version>
+    </dependency>
+
+    <dependency>
+        <groupId>io.cucumber</groupId>
+        <artifactId>cucumber-spring</artifactId>
+        <version>7.16.1</version>
+    </dependency>
+----
+====
+
+3. Now create a class in src/test/java/GlobalCucumberTestSuite.java
+
+====
+[source,java]
+----
+@RunWith(Cucumber.class)
+@CucumberOptions(
+        features = "src/test/resources/features",
+        glue = "com.sp.test",
+        dryRun = false,
+        plugin = {
+                "pretty",
+                "html:target/cucumber-reports/greeting.html",
+                "json:target/cucumber-reports/greeting.json"
+        },
+        monochrome = true
+)
+public class GlobalCucumberTestSuite {
+
+}
+----
+====
+
+Above given @CucumberOptions annotation attributes description:
+
+====
+[source,text]
+----
+1. features: use to specify feature files location.
+2. glue: specify the root package name.
+3. dryRun: use to validate before to run test case based on feature file, it is by default: false.
+4. plugin:
+    i. "pretty" : to show console in pretty way.
+   ii. "html:/target/<path-of-html-file>" : Specify the path of html file
+  iii. "json:/target/<path-of-html-file>" : Specify the path of json file
+5. monochrome: If you set this property 'true', it will make console output more readable.
+----
+====
+
+4. Now create a class in src/test/java/MyCucumberTestSuite.java
+
+====
+[source,java]
+----
+@SpringBootTest
+@CucumberContextConfiguration
+public class MyCucumberTestSuite {
+
+}
+----
+====
+
+5. Now create a class in src/test/java/config/CommonConfig.java
+
+====
+[source,java]
+----
+@Configuration
+public class CommonConfig {
+    public RestClient restClient = RestClient.builder()
+            .baseUrl("http://localhost:8990")
+            .build();
+}
+----
+====
+
+6. Now create the request and response model.
+As of now i want to create src/test/java/model/GreetingRequest.java
+
+====
+[source,java]
+----
+@Builder
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+public class GreetingRequest {
+
+    private String greeting;
+    private String name;
+    private String message;
+
+}
+----
+====
+
+7. Now finally, we need to create step definition class to write the test case.
+
+====
+[source,java]
+----
+@Slf4j
+public class GreetingsStepDefinitions {
+
+    @Autowired
+    CommonConfig config;
+
+    @Value("${greeting.endpoint}")
+    String greetingEndpoint;
+
+    GreetingRequest request;
+
+    String response;
+
+    @Given("Create a greeting request object with {string}, {string} and {string}")
+    public void createGreetingRequestObject(String greeting, String name, String message) {
+        this.request = GreetingRequest.builder().greeting(greeting).name(name).message(message)
+                .build();
+    }
+
+    @When("Call the greetings endpoint and fetch the result")
+    public void callGreetingAPI() {
+       this.response = config.restClient.post().uri(greetingEndpoint)
+               .body(request)
+               .contentType(MediaType.APPLICATION_JSON).retrieve().body(String.class);
+       log.info("Response: {}", this.response);
+    }
+
+    @Then("Validate the result is expected or not")
+    public void validateGreetingResponse() {
+        String msg = request.getGreeting()
+                .concat(" - ").concat(request.getName().toUpperCase())
+                .concat(" - ").concat(request.getMessage());
+        Assert.assertNotNull(this.response);
+        Assert.assertEquals(this.response, msg);
+    }
+
+}
+----
+====
+
