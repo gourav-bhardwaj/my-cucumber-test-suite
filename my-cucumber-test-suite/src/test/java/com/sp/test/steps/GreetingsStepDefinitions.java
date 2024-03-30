@@ -30,12 +30,12 @@ public class GreetingsStepDefinitions {
                 .build();
     }
 
-    @When("Call the greetings endpoint and fetch the result")
-    public void callGreetingAPI() {
+    @When("Call the greetings endpoint with {int}, {double}, {int} and fetch the result")
+    public void callGreetingAPI(int lines, double salary, int new_line) {
        this.response = config.restClient.post().uri(greetingEndpoint)
                .body(request)
                .contentType(MediaType.APPLICATION_JSON).retrieve().body(String.class);
-       log.info("Response: {}", this.response);
+       log.info("Response: {} - lines : {} = salary: {} - new_line : {}", this.response, lines, salary, new_line);
     }
 
     @Then("Validate the result is expected or not")
